@@ -3,7 +3,7 @@ let useKilometers = true;
 let savedLocations = [];
 
 function initMap() {
-    mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN; // From config.js
+    mapboxgl.accessToken = 'pk.eyJ1IjoibW9la2lub3RpIiwiYSI6ImNtOHJidXZ0MDB1N3oyaXF4MjQ4amZ1bTYifQ.yJSEvp1pcvHkocoa925yEA'; // From config.js
     map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/dark-v10',
