@@ -2,9 +2,12 @@ let map;
 let useKilometers = true;
 let savedLocations = [];
 
+// Define API keys globally
+const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoibW9la2lub3RpIiwiYSI6ImNtOHJidXZ0MDB1N3oyaXF4MjQ4amZ1bTYifQ.yJSEvp1pcvHkocoa925yEA';
+const OPENWEATHER_API_KEY = '30e2b4fb1ff82c05cb21b9ffd9dab445';
+
 function initMap() {
-    mapboxgl.accessToken = 'pk.eyJ1IjoibW9la2lub3RpIiwiYSI6ImNtOHJidXZ0MDB1N3oyaXF4MjQ4amZ1bTYifQ.yJSEvp1pcvHkocoa925yEA'; // From config.js
-    const OPENWEATHER_API_KEY = '30e2b4fb1ff82c05cb21b9ffd9dab445';
+    mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
     map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/dark-v10',
