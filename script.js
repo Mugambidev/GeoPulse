@@ -9,7 +9,7 @@ function initMap() {
         style: 'mapbox://styles/mapbox/dark-v10',
         center: [36.817223, -1.286389], // [lng, lat]
         zoom: 8,
-        pitch: 45, // 3D tilt angle (0-60 degrees)
+        pitch: 60, // 3D tilt angle (0-60 degrees)
         bearing: 0 // Optional: rotation angle
     });
 
