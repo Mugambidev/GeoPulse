@@ -3,61 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Survey Studio</title>
+    <title>GeoPulse</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABgAAH6AAAAAQAAAAgAAAAAy+3JAAAAAklEQVR42mNgGAWjYBSMAgD8AADIWjWJAAAAAElFTkSuQmCC">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
 </head>
 <body>
     <header>
-        <h1>Survey Studio</h1>
         <div id="search-container">
-            <input type="text" id="location-input" placeholder="Enter location...">
-            <button id="search-button">Search</button>
+            <input type="text" id="location-input" placeholder="Explore a location..." aria-label="Location search">
+            <button id="search-button" title="Search location"><span>🔍</span></button>
+            <button id="voice-button" title="Use voice command"><span>🎤</span></button>
+            <button id="help-button" title="Show help"><span>?</span></button>
         </div>
+        <h1>GeoPulse</h1>
+        <button id="mode-toggle" title="Toggle night mode">🌙</button>
     </header>
-    <main>
-        <!-- Google Map container -->
-        <div id="map"></div>
 
-        <!-- Coordinates display -->
-        <div id="coordinates">
-            <h2>Coordinates</h2>
-            <p id="latitude">Latitude: </p>
-            <p id="longitude">Longitude: </p>
+    <main>
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="unit-toggle">
+                <button id="unit-btn" title="Toggle units">KM</button>
+            </div>
         </div>
 
-        <!-- Distance calculation -->
-<div id="distance">
-    <h2>Distance Calculation</h2>
-    <form id="distance-form">
-        <label for="point1-lat">Point 1 Lat:</label>
-        <input type="text" id="point1-lat" name="point1-lat"><br>
-        <label for="point1-lng">Point 1 Lng:</label>
-        <input type="text" id="point1-lng" name="point1-lng"><br>
-        <label for="point2-lat">Point 2 Lat:</label>
-        <input type="text" id="point2-lat" name="point2-lat"><br>
-        <label for="point2-lng">Point 2 Lng:</label>
-        <input type="text" id="point2-lng" name="point2-lng"><br>
-        <button type="submit">Calculate Distance</button>
-    </form>
-    <p id="distance-value">Distance: </p>
-</div>
+        <div id="tools-container">
+            <div class="tool-card" id="coordinates">
+                <h2>Coordinates</h2>
+                <p id="latitude">Latitude: Click map</p>
+                <p id="longitude">Longitude: Click map</p>
+            </div>
 
+            <div class="tool-card" id="distance">
+                <h2>Distance Calculator</h2>
+                <form id="distance-form">
+                    <div class="input-group">
+                        <label for="point1-lat">Lat 1:</label>
+                        <input type="number" step="any" id="point1-lat" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="point1-lng">Lng 1:</label>
+                        <input type="number" step="any" id="point1-lng" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="point2-lat">Lat 2:</label>
+                        <input type="number" step="any" id="point2-lat" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="point2-lng">Lng 2:</label>
+                        <input type="number" step="any" id="point2-lng" required>
+                    </div>
+                    <button type="submit">Calculate</button>
+                </form>
+                <p id="distance-value">Distance: -</p>
+            </div>
 
-        <!-- Area calculation -->
-        <div id="area">
-            <h2>Area Calculation</h2>
-            <p>Click on the map to define a polygon</p>
-            <p id="area-value">Area: </p>
+            <div class="tool-card" id="insights">
+                <h2>Location Insights</h2>
+                <p id="insight-location">Location: Click map</p>
+                <p id="insight-weather">Weather: -</p>
+                <button id="save-location" title="Save this location">Save Location</button>
+            </div>
+
+            <div class="tool-card" id="saved-locations">
+                <h2>Saved Locations</h2>
+                <ul id="saved-list"></ul>
+            </div>
         </div>
     </main>
-    <footer>
-        <p>Made with ❤️ by Mugambi Kinoti</p>
-    </footer>
-    <!-- Google Maps API script -->
-      <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCMKhiODSt4amJVvi94EVyiEfzDKy-N8UA&libraries=drawing&callback=initMap">
-      </script>
-          <!-- JavaScript code -->
+
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Welcome to GeoPulse</h2>
+            <p>Search or click to explore locations, measure distances, and discover insights. Save your favorite spots!</p>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
     <script defer src="script.js"></script>
 </body>
 </html>
