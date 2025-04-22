@@ -9,36 +9,50 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
     <header>
         <div id="search-container">
             <input type="text" id="location-input" placeholder="Explore a location..." aria-label="Location search">
-            <button id="search-button" title="Search location"><span>🔍</span></button>
-            <button id="voice-button" title="Use voice command"><span>🎤</span></button>
-            <button id="help-button" title="Show help"><span>?</span></button>
+            <button id="search-button" title="Search location"><i class="fas fa-search"></i></button>
+            <button id="voice-button" title="Use voice command"><i class="fas fa-microphone"></i></button>
+            <button id="help-button" title="Show help"><i class="fas fa-question"></i></button>
         </div>
         <h1>GeoPulse</h1>
-        <button id="mode-toggle" title="Toggle night mode">🌙</button>
+        <div class="right-controls">
+            <button id="user-account" title="User account"><i class="fas fa-user"></i></button>
+            <button id="mode-toggle" title="Toggle night mode"><i class="fas fa-moon"></i></button>
+        </div>
     </header>
 
     <main>
         <div id="map-container">
             <div id="map"></div>
-            <div id="unit-toggle">
+            <div id="map-controls">
                 <button id="unit-btn" title="Toggle units">KM</button>
+                <button id="center-btn" title="Center on your location"><i class="fas fa-location-arrow"></i></button>
+                <div id="tilt-controls">
+                    <button id="tilt-up" title="Increase tilt"><i class="fas fa-angle-up"></i></button>
+                    <button id="tilt-down" title="Decrease tilt"><i class="fas fa-angle-down"></i></button>
+                </div>
+            </div>
+            <div id="loading-overlay">
+                <div class="loader"></div>
+                <p>Loading map data...</p>
             </div>
         </div>
 
         <div id="tools-container">
             <div class="tool-card" id="coordinates">
-                <h2>Coordinates</h2>
+                <h2><i class="fas fa-map-marker-alt"></i> Coordinates</h2>
                 <p id="latitude">Latitude: Click map</p>
                 <p id="longitude">Longitude: Click map</p>
+                <p id="elevation">Elevation: -</p>
             </div>
 
             <div class="tool-card" id="distance">
-                <h2>Distance Calculator</h2>
+                <h2><i class="fas fa-ruler"></i> Distance Calculator</h2>
                 <form id="distance-form">
                     <div class="input-group">
                         <label for="point1-lat">Lat 1:</label>
@@ -56,32 +70,159 @@
                         <label for="point2-lng">Lng 2:</label>
                         <input type="number" step="any" id="point2-lng" required>
                     </div>
-                    <button type="submit">Calculate</button>
+                    <div class="button-row">
+                        <button type="submit">Calculate</button>
+                        <button type="button" id="use-map-points">Use Map Points</button>
+                    </div>
                 </form>
                 <p id="distance-value">Distance: -</p>
             </div>
 
             <div class="tool-card" id="insights">
-                <h2>Location Insights</h2>
+                <h2><i class="fas fa-info-circle"></i> Location Insights</h2>
                 <p id="insight-location">Location: Click map</p>
                 <p id="insight-weather">Weather: -</p>
-                <button id="save-location" title="Save this location">Save Location</button>
+                <p id="insight-timezone">Timezone: -</p>
+                <div class="insights-actions">
+                    <button id="save-location" title="Save this location"><i class="fas fa-bookmark"></i> Save</button>
+                    <button id="share-location" title="Share location"><i class="fas fa-share-alt"></i> Share</button>
+                </div>
+            </div>
+
+            <div class="tool-card" id="route-planner">
+                <h2><i class="fas fa-route"></i> Route Planner</h2>
+                <div class="input-group">
+                    <label for="route-start">Start:</label>
+                    <input type="text" id="route-start" placeholder="Enter start location">
+                </div>
+                <div class="input-group">
+                    <label for="route-end">Destination:</label>
+                    <input type="text" id="route-end" placeholder="Enter destination">
+                </div>
+                <div class="route-type-selector">
+                    <button class="route-type active" data-type="driving"><i class="fas fa-car"></i></button>
+                    <button class="route-type" data-type="walking"><i class="fas fa-walking"></i></button>
+                    <button class="route-type" data-type="cycling"><i class="fas fa-bicycle"></i></button>
+                </div>
+                <button id="calculate-route">Get Directions</button>
+                <div id="route-details" class="hidden">
+                    <p id="route-distance">Distance: -</p>
+                    <p id="route-duration">Duration: -</p>
+                </div>
             </div>
 
             <div class="tool-card" id="saved-locations">
-                <h2>Saved Locations</h2>
+                <h2><i class="fas fa-bookmark"></i> Saved Locations</h2>
                 <ul id="saved-list"></ul>
+                <div class="export-options">
+                    <button id="export-locations" title="Export saved locations"><i class="fas fa-file-export"></i> Export</button>
+                </div>
             </div>
         </div>
     </main>
 
     <div id="help-modal" class="modal">
         <div class="modal-content">
-            <span class="close">×</span>
+            <span class="close"><i class="fas fa-times"></i></span>
             <h2>Welcome to GeoPulse</h2>
             <p>Search or click to explore locations, measure distances, and discover insights. Save your favorite spots!</p>
+            <div class="feature-list">
+                <div class="feature">
+                    <i class="fas fa-search"></i>
+                    <span>Search any location worldwide</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Get precise coordinates and elevation data</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-ruler"></i>
+                    <span>Calculate distances between points</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-route"></i>
+                    <span>Plan routes and get directions</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-cloud-sun"></i>
+                    <span>View weather and timezone information</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-bookmark"></i>
+                    <span>Save and export your favorite places</span>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div id="share-modal" class="modal">
+        <div class="modal-content">
+            <span class="close"><i class="fas fa-times"></i></span>
+            <h2>Share Location</h2>
+            <p>Share this location with others:</p>
+            <input type="text" id="share-url" readonly>
+            <div class="share-buttons">
+                <button id="copy-link"><i class="fas fa-copy"></i> Copy Link</button>
+                <button id="share-twitter"><i class="fab fa-twitter"></i> Twitter</button>
+                <button id="share-facebook"><i class="fab fa-facebook"></i> Facebook</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close"><i class="fas fa-times"></i></span>
+            <h2>User Account</h2>
+            <div id="login-form">
+                <div class="input-group">
+                    <label for="username">Email:</label>
+                    <input type="email" id="username" placeholder="your.email@example.com">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="********">
+                </div>
+                <button id="login-button">Log In</button>
+                <p class="form-footer">Don't have an account? <a href="#" id="signup-link">Sign Up</a></p>
+            </div>
+            <div id="signup-form" class="hidden">
+                <div class="input-group">
+                    <label for="new-email">Email:</label>
+                    <input type="email" id="new-email" placeholder="your.email@example.com">
+                </div>
+                <div class="input-group">
+                    <label for="new-password">Password:</label>
+                    <input type="password" id="new-password" placeholder="********">
+                </div>
+                <div class="input-group">
+                    <label for="confirm-password">Confirm Password:</label>
+                    <input type="password" id="confirm-password" placeholder="********">
+                </div>
+                <button id="signup-button">Sign Up</button>
+                <p class="form-footer">Already have an account? <a href="#" id="login-link">Log In</a></p>
+            </div>
+            <div id="user-profile" class="hidden">
+                <h3 id="user-email">user@example.com</h3>
+                <p>Your saved locations will sync across devices.</p>
+                <button id="logout-button">Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="export-modal" class="modal">
+        <div class="modal-content">
+            <span class="close"><i class="fas fa-times"></i></span>
+            <h2>Export Locations</h2>
+            <p>Export your saved locations in one of these formats:</p>
+            <div class="export-buttons">
+                <button id="export-json"><i class="fas fa-file-code"></i> JSON</button>
+                <button id="export-csv"><i class="fas fa-file-csv"></i> CSV</button>
+                <button id="export-kml"><i class="fas fa-file-alt"></i> KML</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-container"></div>
 
     <script src="config.js"></script>
     <script defer src="script.js"></script>

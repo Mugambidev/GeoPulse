@@ -1,89 +1,129 @@
 # GeoPulse 🌍
 
-GeoPulse is a modern web application for exploring geographical data with an interactive 3D map. Powered by Mapbox, it allows users to search locations, calculate distances, view coordinates, get weather and address insights, and save favorite spots—all within a sleek, user-friendly interface.
+GeoPulse is a comprehensive geospatial exploration tool with an interactive 3D map interface. Powered by Mapbox and OpenWeatherMap, it offers advanced location analysis, measurement tools, and personalized data management in a sleek, responsive design.
 
 ## Features 🚀
 
-- **3D Map View**: Explore locations with a dynamic 3D map tilt using Mapbox GL JS.
-- **Search Locations**: Find any place by name or address and center the map on it.
-- **Coordinates Display**: View real-time latitude and longitude of the map center or clicked points.
-- **Distance Calculator**: Calculate the distance between two points using the Haversine formula.
-- **Location Insights**: Get weather (via OpenWeatherMap) and address details for any clicked location.
-- **Save Locations**: Save and revisit your favorite spots with a single click.
-- **Night/Light Mode**: Toggle between dark and light themes for a comfortable experience.
-- **Voice Search**: Use voice recognition to search for locations hands-free.
+### Core Functionality
+- **Immersive 3D Map**: Dynamic tilt (0-60°) and rotation controls with Mapbox GL JS
+- **Precision Location Tools**:
+  - Coordinate display (6 decimal places)
+  - Elevation data (meters/feet)
+  - Timezone detection
+- **Smart Search**:
+  - Text-based location search
+  - Voice recognition (Web Speech API)
+  - URL sharing with geo-parameters
+
+### Measurement Tools
+- **Distance Calculator**: Haversine formula with km/mi toggle
+- **Route Planner**: Multi-mode routing (drive/walk/cycle)
+- **Area Measurement**: Coming soon!
+
+### Location Intelligence
+- **Weather Insights**: Real-time data from OpenWeatherMap
+- **Address Details**: Full place information
+- **Elevation Profile**: Terrain elevation data
+
+### Personalization
+- **Saved Locations**: Persistent storage with localForage
+- **Custom Themes**: Dark/light mode toggle
+- **Unit Preferences**: Metric/imperial system toggle
+
+### Data Management
+- **Export Formats**: JSON, CSV, and KML
+- **Shared Locations**: URL parameter support
+- **User Accounts**: Coming soon!
 
 ## Usage 💻
 
-GeoPulse is hosted on GitHub Pages and can be accessed directly at [https://mugambidev.github.io/GeoPulse/](https://mugambidev.github.io/GeoPulse/). To run it locally:
+### Web Access
+Live demo: [https://mugambidev.github.io/GeoPulse/](https://mugambidev.github.io/GeoPulse/)
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Mugambidev/GeoPulse.git
-   cd GeoPulse
-   ```
-2. Open `index.html` in a modern web browser.
-
-## Setup for Development 🛠️
-
-To run GeoPulse locally with full functionality, you’ll need to set up API keys and a backend proxy:
-
-### Clone the Repository:
-
+### Local Development
 ```bash
 git clone https://github.com/Mugambidev/GeoPulse.git
 cd GeoPulse
+npm install
+npm run dev
 ```
 
-### Set Up API Keys (Local Testing):
+## Development Setup 🛠️
 
-Create a `config.js` file from the template:
+### Prerequisites
+* Node.js v16+
+* Mapbox API key
+* OpenWeatherMap API key
 
+### Configuration
+1. Create `.env` file:
 ```bash
-cp config.template.js config.js
+cp .env.example .env
 ```
 
-Add your Mapbox and OpenWeatherMap API keys to `config.js`. 
+2. Add your API keys:
+```
+VITE_MAPBOX_TOKEN=your_mapbox_token
+VITE_OPENWEATHER_KEY=your_owm_key
+```
 
-> **Note**: The current deployment on GitHub Pages has API keys hardcoded in `script.js` for simplicity, but this is not secure for production.
+### Recommended Tools
+* Vite for development server
+* ESLint for code quality
+* Prettier for code formatting
 
-### Backend Proxy (Recommended for Production):
-
-GeoPulse uses a backend proxy to securely handle API requests. The backend is hosted on Render (see the [GeoPulse-Backend repository](https://github.com/Mugambidev/GeoPulse-Backend) for details).
-
-- Deploy the backend on Render and update `script.js` with your Render backend URL (e.g., `https://your-render-url.onrender.com`).
-
-### Run Locally:
-
-Use a local server (e.g., `live-server`) to avoid CORS issues:
-
+### Production Build
 ```bash
-npm install -g live-server
-live-server
+npm run build
 ```
 
-Open `index.html` in your browser.
+## Architecture 💡
 
-> **Security Note**: The Mapbox token in `script.js` is currently hardcoded for GitHub Pages deployment. For production, proxy map tile requests through the backend to secure the token.
+### Frontend
+* **Core**: Mapbox GL JS, Vanilla JavaScript
+* **UI**: Custom CSS with CSS variables
+* **State**: Local storage for user preferences
+* **Build**: Vite for optimized production bundles
 
-## Technologies Used 💡
+### Backend (Optional)
+* **Proxy Server**: Node.js/Express
+* **Hosting**: Render.com
+* **Repository**: GeoPulse-Backend
 
-- **HTML5**
-- **CSS3**
-- **JavaScript**
-- **Mapbox GL JS**
-- **OpenWeatherMap API**
-- **Node.js** (for backend proxy)
-- **Render** (for hosting the backend)
+## Security 🔒
 
-## Credits 🙏
+### Best Practices
+* API keys should never be committed
+* Use environment variables
+* Implement backend proxy for production
+* Rate limiting recommended for public deployments
 
-GeoPulse was created with ❤️ by **Mugambi Kinoti**.
+## Roadmap 🗺️
 
-### Acknowledgments 🙌
+### Next Features
+* User authentication
+* Collaborative maps
+* GeoJSON import/export
+* Offline mode support
 
-- **Mapbox Documentation**: For excellent guides on integrating Mapbox GL JS.
-- **OpenWeatherMap API**: For providing weather data.
-- **Stack Overflow and MDN Web Docs**: For troubleshooting and best practices.
-- **Render**: For free backend hosting.
-- **W3Schools and YouTube Tutorials**: For learning resources on web development and APIs.
+## Contributing 🤝
+
+We welcome contributions! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request
+
+## Support ❤️
+
+Having trouble? Open an issue or contact kinotimoe@gmail.com
+
+## License
+
+MIT © 2023 Mugambi Kinoti
+
+## Acknowledgments 🙌
+
+* Mapbox team for excellent documentation
+* OpenWeatherMap for reliable weather data
+* MDN Web Docs for JavaScript references
+* Vite community for build tools
