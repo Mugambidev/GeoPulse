@@ -5,32 +5,47 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
+	"os"
+
+	"github.com/joho/godotenv" // Import the loader
 )
 
-// GeoResponse defines the structure for our API responses
-type GeoResponse struct {
-	Status  string    `json:"status"`
-	Message string    `json:"message"`
-	Time    time.Time `json:"timestamp"`
+type Config struct {
+	MapboxToken string `json:"mapbox_token"`
+	WeatherKey  string `json:"weather_key"`
 }
 
 func main() {
-	// 1. Serve static files (Your HTML, CSS, JS)
+	// LOAD THE .ENV FILE
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file, checking system environment variables instead")
+	}
+
+	http.HandleFunc("/api/config", configHandler)
+
 	fs := http.FileServer(http.Dir("./"))
 	http.Handle("/", fs)
 
-	// 2. A Go-powered API endpoint for GeoPulse insights
-	http.HandleFunc("/api/status", func(w http.ResponseWriter, r *http.Request) {
-		res := GeoResponse{
-			Status:  "Active",
-			Message: "GeoPulse Go Backend is handling concurrency smoothly.",
-			Time:    time.Now(),
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(res)
-	})
+	port := "8080"
+	fmt.Printf("GeoPulse server starting on http://localhost:%s\n", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
+}
 
-	fmt.Println("GeoPulse server starting on :8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+func configHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Now we ONLY fetch from the environment
+	cfg := Config{
+		MapboxToken: os.Getenv("MAPBOX_TOKEN"),
+		WeatherKey:  os.Getenv("OPENWEATHER_KEY"),
+	}
+
+	// Safety check: if keys are missing, send an error
+	if cfg.MapboxToken == "" || cfg.WeatherKey == "" {
+		http.Error(w, "API keys not configured on server", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(cfg)
 }
