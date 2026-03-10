@@ -79,17 +79,14 @@ npm run build
 
 ## Architecture 💡
 
+### Backend (Updated!)
+* **Engine**: Go (Golang) 1.21+
+* **Features**: High-performance static file serving, RESTful API endpoints, and concurrent request handling.
+* **Server**: Custom `net/http` implementation.
+
 ### Frontend
 * **Core**: Mapbox GL JS, Vanilla JavaScript
-* **UI**: Custom CSS with CSS variables
-* **State**: Local storage for user preferences
-* **Build**: Vite for optimized production bundles
-
-### Backend (Optional)
-* **Proxy Server**: Node.js/Express
-* **Hosting**: Render.com
-* **Repository**: GeoPulse-Backend
-
+* **UI**: Custom CSS with Dark/Light Academia variables
 ## Security 🔒
 
 ### Best Practices

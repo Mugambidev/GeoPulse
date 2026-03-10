@@ -6,8 +6,8 @@ let userLoggedIn = false;
 let darkMode = true;
 
 // Define API keys globally
-const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoibW9la2lub3RpIiwiYSI6ImNtOHJidXZ0MDB1N3oyaXF4MjQ4amZ1bTYifQ.yJSEvp1pcvHkocoa925yEA';
-const OPENWEATHER_API_KEY = '30e2b4fb1ff82c05cb21b9ffd9dab445';
+const MAPBOX_ACCESS_TOKEN = '';
+const OPENWEATHER_API_KEY = '';
 
 function initMap() {
     mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -888,4 +888,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up login form as default
     document.getElementById("login-form").classList.remove("hidden");
     document.getElementById("signup-form").classList.add("hidden");
+ // Add this to the bottom of your existing script.js
+async function initGoBackend() {
+    try {
+        const response = await fetch('/api/status');
+        const data = await response.json();
+        console.log("Backend Status:", data.message);
+        
+        // Optionally display this in your UI to show it's full-stack
+        const footer = document.querySelector('.form-footer');
+        if(footer) {
+            const statusTag = document.createElement('p');
+            statusTag.style.color = 'var(--accent-color)';
+            statusTag.innerText = `System: Go-Backend ${data.status}`;
+            footer.appendChild(statusTag);
+        }
+    } catch (err) {
+        console.error("Go server not detected. Running in static mode.");
+    }
+}
+
+// Call it inside your DOMContentLoaded listener
+document.addEventListener('DOMContentLoaded', () => {
+    // ... your existing init functions ...
+    initGoBackend();
+});
 });
