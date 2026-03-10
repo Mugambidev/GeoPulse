@@ -1,0 +1,14 @@
+# Go binaries
+geopulse
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
