@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: geopulse
+    runtime: go
+    buildCommand: go build -o main main.go
+    startCommand: ./main
+    envVars:
+      - key: GO_VERSION
+        value: 1.22.0
+      - key: MAPBOX_TOKEN
+        sync: false
+      - key: OPENWEATHER_KEY
+        sync: false
