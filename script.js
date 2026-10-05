@@ -2,12 +2,11 @@ let map;
 let useKilometers = true;
 let savedLocations = [];
 let measurePoints = [];
-let userLoggedIn = false;
+let isMeasuring = false;
 let darkMode = true;
 
 // These will be populated by the Go backend
 let MAPBOX_ACCESS_TOKEN = '';
-let OPENWEATHER_API_KEY = '';
 
 /**
  * 1. INITIALIZATION & CONFIG
@@ -21,13 +20,11 @@ async function loadConfig() {
         const config = await response.json();
         
         MAPBOX_ACCESS_TOKEN = config.mapbox_token;
-        OPENWEATHER_API_KEY = config.weather_key;
         
-        // Only initialize the map once we have the token
-        initMap(); 
+        initMap();
     } catch (err) {
         console.error("Could not load config from Go backend:", err);
-        showNotification("Security Error: Could not retrieve API keys.", "error");
+        showNotification("Map configuration could not be loaded.", "error");
     }
 }
 
@@ -76,7 +73,7 @@ function setupMapEvents() {
         fetchLocationInsights(latitude, longitude);
         fetchElevation(latitude, longitude);
         
-        if (measurePoints.length < 2) {
+        if (isMeasuring && measurePoints.length < 2) {
             measurePoints.push([latitude, longitude]);
             if (measurePoints.length === 2) {
                 document.getElementById("point1-lat").value = measurePoints[0][0];
@@ -90,6 +87,8 @@ function setupMapEvents() {
                 );
                 displayDistance(distance);
                 measurePoints = [];
+                isMeasuring = false;
+                showNotification("Distance calculated from the two selected map points.", "success");
             }
         }
     });
@@ -127,7 +126,39 @@ function setupEventListeners() {
     });
 
     document.getElementById("center-btn").addEventListener("click", centerOnUserLocation);
+    document.getElementById("tilt-up").addEventListener("click", () => adjustPitch(10));
+    document.getElementById("tilt-down").addEventListener("click", () => adjustPitch(-10));
     document.getElementById("calculate-route").addEventListener("click", calculateRoute);
+
+    document.querySelectorAll(".route-type").forEach((button) => {
+        button.addEventListener("click", () => {
+            document.querySelectorAll(".route-type").forEach((routeButton) => {
+                routeButton.classList.remove("active");
+            });
+            button.classList.add("active");
+        });
+    });
+
+    document.getElementById("distance-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const lat1 = Number(document.getElementById("point1-lat").value);
+        const lng1 = Number(document.getElementById("point1-lng").value);
+        const lat2 = Number(document.getElementById("point2-lat").value);
+        const lng2 = Number(document.getElementById("point2-lng").value);
+
+        if (!areValidCoordinates(lat1, lng1) || !areValidCoordinates(lat2, lng2)) {
+            showNotification("Enter valid latitude and longitude values.", "warning");
+            return;
+        }
+
+        displayDistance(calculateDistance(lat1, lng1, lat2, lng2));
+    });
+
+    document.getElementById("use-map-points").addEventListener("click", () => {
+        measurePoints = [];
+        isMeasuring = true;
+        showNotification("Click two points on the map to calculate their distance.", "info");
+    });
     
     // Save location
     document.getElementById("save-location").addEventListener("click", () => {
@@ -190,9 +221,12 @@ function fetchLocationInsights(lat, lng) {
             document.getElementById("insight-location").textContent = `Location: ${locationName}`;
         });
 
-    // Weather from OpenWeather
-    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${OPENWEATHER_API_KEY}&units=metric`)
-        .then(response => response.json())
+    // The server keeps the OpenWeather key private and proxies this request.
+    fetch(`/api/weather?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`)
+        .then(response => {
+            if (!response.ok) throw new Error("Weather service unavailable");
+            return response.json();
+        })
         .then(data => {
             const temp = data.main.temp;
             const desc = data.weather[0].description;
@@ -241,6 +275,34 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 function displayDistance(distance) {
     const unit = useKilometers ? "km" : "mi";
     document.getElementById("distance-value").textContent = `Distance: ${distance.toFixed(2)} ${unit}`;
+}
+
+function areValidCoordinates(lat, lng) {
+    return Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+}
+
+function adjustPitch(amount) {
+    if (!map) return;
+    map.setPitch(Math.max(0, Math.min(60, map.getPitch() + amount)));
+}
+
+function centerOnUserLocation() {
+    if (!navigator.geolocation) {
+        showNotification("Location services are not supported in this browser.", "warning");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const { latitude, longitude } = position.coords;
+            map.flyTo({ center: [longitude, latitude], zoom: 12, essential: true });
+            displayCoordinates(latitude, longitude);
+            fetchLocationInsights(latitude, longitude);
+            fetchElevation(latitude, longitude);
+        },
+        () => showNotification("Could not access your location.", "warning"),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
 }
 
 function setupModal(buttonId, modalId) {
